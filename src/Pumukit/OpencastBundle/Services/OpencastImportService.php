@@ -18,7 +18,8 @@ use Pumukit\OpencastBundle\Services\ClientService;
 class OpencastImportService
 {
     public function __construct(DocumentManager $documentManager, factoryService $factoryService,
-            tagService $tagService, ClientService $opencastClient, OpencastService $jobService) {
+            tagService $tagService, ClientService $opencastClient, OpencastService $jobService)
+    {
         $this->opencastClient = $opencastClient;
         $this->dm = $documentManager;
         $this->factoryService = $factoryService;
@@ -27,12 +28,28 @@ class OpencastImportService
     }
 
 
-    public function importRecording($opencastId)
+    /**
+     * Function to import an opencast recording based on the mediapackage id in opencast
+     *
+     * @param  string $opencastId mediapackage id in opencast
+     */
+    public function importRecordingId($opencastId)
+    {
+        $opencastClient = $this->opencastClient;
+        $this->importRecording($opencastClient->getMediaPackage($opencastId));
+    }
+
+    /**
+     * Function to import an opencast recording based on the mediapackage, this function
+     * requires the actual mediapackage from opencast, if importing based on the id please use
+     * importRecordingId
+     *
+     * @param  Array $mediaPackage
+     */
+    public function importRecording(Array $mediaPackage)
     {
         $opencastClient = $this->opencastClient;
         $oneseries = "WITHOUT_SERIES";
-
-        $mediaPackage = $opencastClient->getMediaPackage($opencastId);
         $repository_series = $this->dm->getRepository('PumukitSchemaBundle:Series');
 
         $series = $repository_series->findOneBy(array("title.en" => "MediaPackages without series"));
@@ -168,6 +185,12 @@ class OpencastImportService
         }
     }
 
+    /**
+     * Helper function to import the opencast serie to a pumukit internal series
+     * 
+     * @param  String $oneseries
+     * @param  Array $mediaPackage
+     */
     private function importSeries($oneseries, $mediaPackage)
     {
         $announce = true;

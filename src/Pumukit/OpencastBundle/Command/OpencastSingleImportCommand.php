@@ -31,6 +31,6 @@ class OpencastSingleImportCommand extends ContainerAwareCommand
             $output->writeln("Importing opencast recording: " . $opencastId);
         }
         $opencastImportService = $this->getContainer()->get('pumukit_opencast.import');
-        $opencastImportService->importRecording($opencastId);
+        $opencastImportService->importRecordingId($opencastId);
     }
 }

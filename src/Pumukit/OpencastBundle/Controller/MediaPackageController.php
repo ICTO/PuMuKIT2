@@ -4,11 +4,13 @@ namespace Pumukit\OpencastBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Pagerfanta\Adapter\FixedAdapter;
 use Pagerfanta\Pagerfanta;
 
@@ -75,8 +77,27 @@ class MediaPackageController extends Controller
     public function importAction($id, Request $request)
     {
         $opencastService = $this->get('pumukit_opencast.import');
-        $opencastService->importRecording($id);
+        $opencastService->importRecordingId($id);
         return $this->redirect($this->getRequest()->headers->get('referer'));
+    }
+
+    /**
+    * @Route("/opencast/addmediapackage")
+    * @Method("POST")
+    */
+    public function addAction(Request $request)
+    {
+        if ($request->headers->get('content-type') === 'application/json') {
+            $content = json_decode($request->getContent(), true);
+            $opencastImportService = $this->get('pumukit_opencast.import');
+            $opencastImportService->importRecording($content['mediapackage']);
+            return new Response();
+        } else {
+            $response = new Response();
+            $response->setStatusCode(500);
+            return $response;
+        }
+
     }
 
     /**

@@ -42,7 +42,7 @@ class OpencastBatchImportCommand extends ContainerAwareCommand
                 if($repositoryMultimediaObjects->findOneBy(array("properties.opencast" => $mediaPackage["id"]))) {
                     $output->writeln("Mediapackage " . $mediaPackage['id'] . " has already been imported, skipping to next mediapackage");
                 } else {
-                    $opencastImportService->importRecording($mediaPackage['id']);
+                    $opencastImportService->importRecordingId($mediaPackage['id']);
                 }
             }
             $batchPlace = $batchPlace + $batchSize;
